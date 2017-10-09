@@ -292,7 +292,6 @@ class PadModel
     private var _playerNodeArrayCount: Int = 5;
     var playerNodeArrayCount: Int{    get{    return _playerNodeArrayCount; }   }
     
-    //  TODO:   can we go down to one playerNode????
     /** iterating through an array of player nodes per start command has a number of musical adavantages */
     private var _playerNodeArray: [AVAudioPlayerNode?]! = nil;
     var playerNodeArray: [AVAudioPlayerNode?]
@@ -378,7 +377,6 @@ class PadModel
         set{    _startStopTriggerMode = newValue;   }
     }
     
-    // TODO: setter for public member here probably needs some sort of conversion....
     /** the rate at which the sound will playback,
         effectivly affecting the sound's pitch */
     private var _rate: Float! = nil;
@@ -388,7 +386,6 @@ class PadModel
         set{    _rate = newValue;   }
     }
     
-    //  TODO: this only makes sense if we have the host written.
     // TODO: we need to enforce a strict range here
     /** right to left position of the sound in the stereo field */
     private var _pan: Float! = 0;
@@ -451,14 +448,6 @@ class PadModel
         set{    _loopMode = newValue;   }
     }
     
-    /** play signal to send to the host if the song is connected */
-    private var _playSignalData: Data! = nil;
-    var playSignalData: Data{   get{    return _playSignalData; }   }
-    
-    /** stop signal to send to the host if the song is connected */
-    private var _stopSignalData: Data! = nil;
-    var stopSignalData: Data{   get{    return _stopSignalData; }   }
-    
     init(file: URL, bankNumber: Int, padNumber: Int, hardwareOutputs: Int)
     {
         assert(hardwareOutputs != -1)
@@ -484,12 +473,6 @@ class PadModel
         _varispeedNodeArray = [AVAudioUnitVarispeed?](repeating: nil, count: _playerNodeArrayCount);
         
         setNodeArray(audiofile: _file);
-        
-        let playSignalString = "play: " + bankNumber.description + " " + padNumber.description;
-        _playSignalData = playSignalString.data(using: .ascii);
-        
-        let stopSignalString = "stop: " + bankNumber.description + " " + padNumber.description;
-        _stopSignalData = stopSignalString.data(using: .ascii);
     }
     
     /** init all player and varispeed nodes in their respective arrays */
@@ -536,19 +519,9 @@ class PadModel
             {   if(_playerNodeArray[_currentPlayIndex - 1]?.isPlaying)!{    _playerNodeArray[_currentPlayIndex - 1]?.stop();    }   }
         }
         
-        /** BAND AID ALERT ***********************************
-            THIS BAND AID MUST BE REMOVED ONCE WE FIGURE OUT WHY WE ARE GETTING VALUES OF ZERO FOR START AND END POINTS
-                UNDER CERTAIN CIRCUMSTANCES 
-                    THIS BAND AID PREVENTS A RUN TIME ERROR */
-        if(_playFrameCount == 0)
-        {
-            _playFrameCount = 1;
-            print("BAND AID PLAYFRAMECOUNT WAS SET TO 1 IN PAD MODEL'S PLAY()");
-        }
         
         _playerNodeArray[_currentPlayIndex]?.scheduleBuffer(_fileBuffer, completionHandler: nil);
-       //_playerNodeArray[_currentPlayIndex]?.scheduleSegment(_file, startingFrame: AVAudioFramePosition(_startPoint), frameCount: _playFrameCount, at: nil, completionHandler: nil);
-    
+       
         _playerNodeArray[_currentPlayIndex]?.play();
     }
     
@@ -564,7 +537,6 @@ class PadModel
         //              this is giving the time as in what time it is,
         //                  not where the play head stopped.
         print("stopped @ time: " + stopTime!.sampleTime.description);
-        //print("stopped @ time: " + (stopTime! / AVAudioTime(hostTime: UInt64(_file.fileFormat.sampleRate))).description);
         
         //  TEST: we need to do an ear test of Playthrough mode to see if it produces any clicks
         // only stop if trigger mode is start/stop;
@@ -573,7 +545,7 @@ class PadModel
             //playerNodeArray[_currentPlayIndex]?.stop();
             
             // if we've stopped before the start of the fade out region....
-            if(stopFrame! < releaseFadeStartPosition)    //  <-- I don't like this init call here!!!
+            if(stopFrame! < releaseFadeStartPosition)
             {
                 //  apply the release fade...
                 applyReleaseFade(position: stopFrame!)
@@ -596,7 +568,6 @@ class PadModel
         {   print("file loaded into bank " + _bankNumber.description + " pad " + _padNumber.description + " is empty."); }
     }
     
-    //  TODO: it looks like this is getting called more times than it needs to.....
     //  https://github.com/AudioKit/AudioKit/blob/master/AudioKit/Common/Nodes/Playback/Player/AKAudioPlayer.swift
     private func updateBuffer()
     {
