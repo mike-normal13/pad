@@ -9,25 +9,6 @@
 import UIKit
 import AVFoundation
 
-//  TEST: we need to do an ear test of Playthrough mode to see if it produces any clicks
-//  DEBUG:  we did see a bad thread access exception concerning accessing one of the _bgc color properties,
-//              it is hard to get this to trigger however.
-//  TODO:   in the future when we implement reverse play,
-//              all the AudioKitPlayerNode does is reverse the order of the new buffer member we just addded(10/6/2017)
-//                  https://github.com/AudioKit/AudioKit/blob/master/AudioKit/Common/Nodes/Playback/Player/AKAudioPlayer.swift
-//  TODO:   we should explore trying to do all this with just one AVAudioPlayerNode,
-//              that is what AudioKit does!
-//  TODO: down the road have option to show file names in a label for each pad
-//  TODO: option to toggle between mono and stereo????
-//  TODO:   RGB:    Yellow: 255, 255, 0
-//                  Blue:   0, 0, 255
-//                  Orange: 255, 128, 0
-//                  Purple: 127, 0, 255
-//                  Green:  0, 255, 0
-//                  Black: 255, 255, 255
-//                  White: 0, 0, 0 ???
-//  TODO:   HSB:
-
 // this file encompases the model and view architecture of the Pad concept.
 //  we have the view component and the model components of the pad residing in distant parts of the class hierarchy.
 
